@@ -4,7 +4,6 @@ Crossfolium
 -----------
 
 """
-__version__ = "0.0.0"
 
 from .crossfolium import (
     Crossfilter,
@@ -18,6 +17,8 @@ from .crossfolium import (
     HeatmapFilter,
     GeoChoroplethFilter,
     )
+
+__version__ = "0.0.0"
 
 __all__ = [
     '__version__',

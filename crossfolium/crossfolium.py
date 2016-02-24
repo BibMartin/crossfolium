@@ -7,14 +7,10 @@ Crossfolium
 from jinja2 import Template
 import json
 
-#from .utilities import color_brewer, _parse_size, legend_scaler, _locations_mirror, _locations_tolist, write_png,\
-#    image_to_url
-#from .six import text_type, binary_type
-
-from folium.element import Figure, JavascriptLink, CssLink, Div, MacroElement
+from branca.element import Figure, JavascriptLink, CssLink, Div, MacroElement
 from folium.map import FeatureGroup
 from folium.plugins import HeatMap
-#from .map import Map, TileLayer, Icon, Marker, Popup
+
 
 class Crossfilter(Div):
     def __init__(self, data, **kwargs):
@@ -30,7 +26,8 @@ class Crossfilter(Div):
 
         self.data = data
 
-        self.add_children(MacroElement("""
+        crossfilter_def = MacroElement()
+        crossfilter_def._template = Template(("""
             {% macro script(this, kwargs) %}
                 var {{this._parent.get_name()}} = {};
                 {{this._parent.get_name()}}.data = {{this._parent.data}};
@@ -38,7 +35,8 @@ class Crossfilter(Div):
                 {{this._parent.get_name()}}.allDim = {{this._parent.get_name()}}.crossfilter.dimension(
                     function(d) {return d;});
             {% endmacro %}
-            """))
+            """))  # noqa
+        self.add_child(crossfilter_def)
 
         self._template = Template(u"""
             {% macro header(this, kwargs) %}
@@ -59,38 +57,40 @@ class Crossfilter(Div):
                dc.renderAll();
             {% endmacro %}
         """)
-    def render(self,**kwargs):
-        super(Crossfilter,self).render(**kwargs)
+
+    def render(self, **kwargs):
+        super(Crossfilter, self).render(**kwargs)
 
         figure = self._parent.get_root()
-        assert isinstance(figure,Figure), ("You cannot render this Element "
-            "if it's not in a Figure.")
+        assert isinstance(figure, Figure), (
+            "You cannot render this Element if it's not in a Figure.")
 
-        figure.header.add_children(
+        figure.header.add_child(
             CssLink("https://cdnjs.cloudflare.com/ajax/libs/dc/1.7.5/dc.css"),
             name='dcjs_css')
-        figure.header.add_children(
+        figure.header.add_child(
             CssLink("https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css"),
             name='leaflet_css')
-        figure.header.add_children(
+        figure.header.add_child(
             CssLink("https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"),
             name='bootstrap_css')
 
-        figure.header.add_children(
+        figure.header.add_child(
             JavascriptLink("https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"),
             name='d3js')
-        figure.header.add_children(
-            JavascriptLink("https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"),
+        figure.header.add_child(
+            JavascriptLink("https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"),  # noqa
             name='crossfilterjs')
-        figure.header.add_children(
+        figure.header.add_child(
             JavascriptLink("https://cdnjs.cloudflare.com/ajax/libs/dc/2.0.0-beta.20/dc.js"),
             name='dcjs')
-        figure.header.add_children(
+        figure.header.add_child(
             JavascriptLink("https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"),
             name='leaflet')
-        figure.header.add_children(
-            JavascriptLink("https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"),
+        figure.header.add_child(
+            JavascriptLink("https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"),  # noqa
             name='underscorejs')
+
 
 class PieFilter(Div):
     def __init__(self, crossfilter, column, name="", width=150, height=150, inner_radius=20,
@@ -159,7 +159,8 @@ class PieFilter(Div):
                 dc.redrawAll();
                 });
         {% endmacro %}
-        """)
+        """)  # noqa
+
 
 class RowBarFilter(Div):
     """TODO docstring here
@@ -227,7 +228,8 @@ class RowBarFilter(Div):
                 dc.redrawAll();
                 });
         {% endmacro %}
-        """)
+        """)  # noqa
+
 
 class BarFilter(Div):
     def __init__(self, crossfilter, column, width=150, height=150, bar_padding=0.1,
@@ -242,16 +244,16 @@ class BarFilter(Div):
 
         self.crossfilter = crossfilter
         self.column = column
-        self.width=width
-        self.height=height
-        self.bar_padding=bar_padding
-        self.domain=json.dumps(domain)
-        self.groupby=groupby
-        self.xlabel=xlabel
-        self.ylabel=ylabel
-        self.margins=json.dumps(margins)
-        self.xticks=json.dumps(xticks)
-        self.time_format=time_format
+        self.width = width
+        self.height = height
+        self.bar_padding = bar_padding
+        self.domain = json.dumps(domain)
+        self.groupby = groupby
+        self.xlabel = xlabel
+        self.ylabel = ylabel
+        self.margins = json.dumps(margins)
+        self.xticks = json.dumps(xticks)
+        self.time_format = time_format
         self.weight = weight
         self.elastic_y = elastic_y
 
@@ -315,7 +317,8 @@ class BarFilter(Div):
                       {% endif %}
                       });
         {% endmacro %}
-        """)
+        """)  # noqa
+
 
 class FeatureGroupFilter(FeatureGroup):
     def __init__(self, crossfilter, name=None, fit_bounds=False,
@@ -363,6 +366,7 @@ class FeatureGroupFilter(FeatureGroup):
             {{this.get_name()}}.updateFun();
         {% endmacro %}
         """)
+
 
 class TableFilter(Div):
     def __init__(self, crossfilter, columns, size=10, sort_by=None, ascending=True, **kwargs):
@@ -420,6 +424,7 @@ class TableFilter(Div):
         {% endmacro %}
         """)
 
+
 class CountFilter(Div):
     def __init__(self, crossfilter, html_template="{filter}/{total}", **kwargs):
         """TODO docstring here
@@ -460,6 +465,7 @@ class CountFilter(Div):
         {% endmacro %}
         """)
 
+
 class ResetFilter(Div):
     def __init__(self, html="Reset all", **kwargs):
         """TODO docstring here
@@ -493,11 +499,12 @@ class ResetFilter(Div):
         {% endmacro %}
         """)
 
+
 class HeatmapFilter(HeatMap):
     def __init__(self, crossfilter, name=None, fit_bounds=False, **kwargs):
         """
         """
-        super(HeatmapFilter, self).__init__([],**kwargs)
+        super(HeatmapFilter, self).__init__([], **kwargs)
         self._name = 'HeatmapFilter'
 
         self.crossfilter = crossfilter
@@ -536,6 +543,7 @@ class HeatmapFilter(HeatMap):
             {{this.get_name()}}.updateFun();
         {% endmacro %}
         """)
+
 
 class GeoChoroplethFilter(Div):
     """TODO docstring here
@@ -613,4 +621,4 @@ class GeoChoroplethFilter(Div):
                 dc.redrawAll();
                 });
         {% endmacro %}
-        """)
+        """)  # noqa

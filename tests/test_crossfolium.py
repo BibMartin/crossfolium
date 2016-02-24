@@ -5,5 +5,7 @@ CrossFolium Test Module
 """
 import crossfolium as cf
 
+
 def test_true():
-    assert True
+    c = cf.Crossfilter([])
+    c._repr_html_()
