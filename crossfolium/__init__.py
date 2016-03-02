@@ -4,8 +4,9 @@ Crossfolium
 -----------
 
 """
+from __future__ import absolute_import
 
-import crossfolium.marker_function as marker_function
+from crossfolium import marker_function
 
 from crossfolium.crossfolium import (
     Crossfilter,
@@ -18,7 +19,7 @@ from crossfolium.crossfolium import (
     GeoChoroplethFilter,
     )
 
-from .map import (
+from crossfolium.map import (
     FeatureGroupFilter,
     HeatmapFilter,
     )
