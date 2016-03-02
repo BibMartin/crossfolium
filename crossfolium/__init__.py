@@ -5,7 +5,9 @@ Crossfolium
 
 """
 
-from .crossfolium import (
+import crossfolium.marker_function as marker_function
+
+from crossfolium.crossfolium import (
     Crossfilter,
     PieFilter,
     RowBarFilter,
@@ -25,6 +27,7 @@ __version__ = "0.0.0"
 
 __all__ = [
     '__version__',
+    'marker_function',
     'Crossfilter',
     'PieFilter',
     'RowBarFilter',

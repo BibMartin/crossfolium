@@ -12,7 +12,7 @@ from folium.plugins import HeatMap
 
 
 class FeatureGroupFilter(FeatureGroup):
-    def __init__(self, crossfilter, name=None, fit_bounds=False, marker_function=None,
+    def __init__(self, crossfilter, name=None, fit_bounds=False,
                  circle_radius=None, color="#0000ff", opacity=1., **kwargs):
         """
         """
@@ -27,16 +27,11 @@ class FeatureGroupFilter(FeatureGroup):
         self.color = color
         self.opacity = opacity
 
-        self.marker_function = (
-            marker_function if marker_function
-            else ('function (d) {return L.marker([d.lat, d.lng]).bindPopup(d.popup);}')
-            )
-
         self._template = Template(u"""
         {% macro script(this, kwargs) %}
             var {{this.get_name()}} = {};
             {{this.get_name()}}.feature_group = new L.FeatureGroup();
-            {{this.get_name()}}.marker_function = {{this.marker_function}}
+            {{this.get_name()}}.marker_function = function(d) {return L.marker([d.lat, d.lng]);}
             {{this.get_name()}}.updateFun = function() {
                 this.feature_group.clearLayers();
                 var dimVals = {{this.crossfilter.get_name()}}.allDim.top(Infinity)
