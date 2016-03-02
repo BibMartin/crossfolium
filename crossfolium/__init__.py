@@ -10,12 +10,15 @@ from .crossfolium import (
     PieFilter,
     RowBarFilter,
     BarFilter,
-    FeatureGroupFilter,
     TableFilter,
     CountFilter,
     ResetFilter,
-    HeatmapFilter,
     GeoChoroplethFilter,
+    )
+
+from .map import (
+    FeatureGroupFilter,
+    HeatmapFilter,
     )
 
 __version__ = "0.0.0"
