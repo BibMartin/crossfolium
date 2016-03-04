@@ -14,7 +14,7 @@ def test_no_marker_function():
     out = ''.join(f.render().split())
     tmp = ''.join("""
         .marker_function = function(d) {
-            return L.marker([d.lat, d.lng]);}
+            return L.marker([0, 0]);}
         """.split())
     assert tmp in out
 
@@ -62,8 +62,8 @@ def test_circle_marker_function():
     tmp = ''.join("""
         .marker_function = function (d) {
             return L.circle([d["lat"], d["lng"]],50000,{
-                "fillColor": "red",
-                "stroke": false
+                stroke: false,
+                fillColor: "red",
                 }).setRadius(50000);
             }
         """.split())
@@ -72,8 +72,8 @@ def test_circle_marker_function():
     tmp = ''.join("""
         .marker_function = function (d) {
             return L.circleMarker([d["lat"], d["lng"]],{
-                "fillColor": "green",
-                "weight": 1
+                weight: 1,
+                fillColor: "green",
                 }).setRadius(10);
             }
         """.split())
@@ -95,7 +95,7 @@ def test_awesome_marker_function():
     out = ''.join(f.render().split())
     tmp = ''.join("""
         .marker_function = function (d) {
-            var marker = L.marker([d["lat"], d["lng"]]);
+            var marker = L.marker([d["lat"], d["lng"]], {opacity: 1.0,});
             var icon = L.AwesomeMarkers.icon({
                 icon : d["icon"],
                 prefix : "fa",
