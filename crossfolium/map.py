@@ -31,7 +31,7 @@ class FeatureGroupFilter(FeatureGroup):
         {% macro script(this, kwargs) %}
             var {{this.get_name()}} = {};
             {{this.get_name()}}.feature_group = new L.FeatureGroup();
-            {{this.get_name()}}.marker_function = function(d) {return L.marker([d.lat, d.lng]);}
+            {{this.get_name()}}.marker_function = function(d) {return L.marker([0,0]);}
             {{this.get_name()}}.updateFun = function() {
                 this.feature_group.clearLayers();
                 var dimVals = {{this.crossfilter.get_name()}}.allDim.top(Infinity)
