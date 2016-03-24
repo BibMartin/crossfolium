@@ -100,7 +100,7 @@ class HeatmapFilter(HeatMap):
 
 
 class MarkerClusterFilter(FeatureGroup):
-    def __init__(self, crossfilter, name=None, fit_bounds=False,
+    def __init__(self, crossfilter, lat='lat', lng='lng', name=None, fit_bounds=False,
                  max_cluster_radius=None, geofilter=True,
                  circle_radius=None, color="#0000ff", opacity=1., **kwargs):
         """
@@ -111,6 +111,8 @@ class MarkerClusterFilter(FeatureGroup):
         self.tile_name = name if name is not None else self.get_name()
 
         self.crossfilter = crossfilter
+        self.lat = lat
+        self.lng = lng
         self.fit_bounds = fit_bounds
         self.circle_radius = circle_radius
         self.color = color
@@ -121,15 +123,16 @@ class MarkerClusterFilter(FeatureGroup):
         self._template = Template(u"""
         {% macro script(this, kwargs) %}
             var {{this.get_name()}} = {};
+            {{this.get_name()}}.marker_function = function(p) {return L.marker([p["{{this.lat}}"],p["{{this.lng}}"]]);}
             {{this.get_name()}}.chart = new L.markerClusterGroup({
                 {%if this.max_cluster_radius %}maxClusterRadius:{{this.max_cluster_radius}},{%endif%}
                 });
                 
             {% if this.geofilter %}
                 {{this.get_name()}}.latDimension = {{this.crossfilter.get_name()}}.crossfilter.dimension(
-                    function(p) { return p.lat; });
+                    function(p) { return p["{{this.lat}}"]; });
                 {{this.get_name()}}.lngDimension = {{this.crossfilter.get_name()}}.crossfilter.dimension(
-                    function(p) { return p.lng; });
+                    function(p) { return p["{{this.lng}}"]; });
 
                 {{this._parent.get_name()}}.on('moveend', function(){
                     var bounds = {{this._parent.get_name()}}.getBounds();
@@ -145,21 +148,14 @@ class MarkerClusterFilter(FeatureGroup):
                 var dimVals = {{this.crossfilter.get_name()}}.allDim.top(Infinity)
                 for (var i in dimVals) {
                     var d = dimVals[i];
-                    var marker =
-                    {% if this.circle_radius %}L.circleMarker([d.lat, d.lng],
-                        {
-                        fillColor: '{{ this.color }}',
-                        fillOpacity: {{ this.opacity }}
-                        }).setRadius({{this.circle_radius}})
-                    {% else %}L.marker([d.lat, d.lng],{opacity:{{this.opacity}} }){% endif %};
-                    marker.bindPopup(d.popup);
+                    var marker = this.marker_function(d);
                     this.chart.addLayer(marker);
                     }
                 {{this._parent.get_name()}}.addLayer(this.chart);
                 {% if this.fit_bounds %}{{this._parent.get_name()}}
                     .fitBounds(this.chart.getBounds());{% endif %}
                 }
-            dc.dataTable('#foo')
+            dc.dataTable('#{{this.get_name()}}footable')
                .dimension({{this.crossfilter.get_name()}}.allDim)
                .group(function (d) { return 'dc.js';})
                .on('renderlet', function (table) { {{this.get_name()}}.updateFun();});
