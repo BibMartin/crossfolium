@@ -22,6 +22,7 @@ from crossfolium.crossfolium import (
 from crossfolium.map import (
     FeatureGroupFilter,
     HeatmapFilter,
+    MarkerClusterFilter,
     )
 
 __version__ = "0.0.0"
@@ -39,4 +40,5 @@ __all__ = [
     'ResetFilter',
     'HeatmapFilter',
     'GeoChoroplethFilter',
+    'MarkerClusterFilter',
     ]
